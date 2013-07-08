@@ -1,29 +1,22 @@
 <?php
-  /**
-   * M-V-C Framework main entry point
-   * 
-   * @package    MVC_Framework
-   * @subpackage System
-   * @author     Max Weller <max.weller@teamwiki.net>, Moritz Willig <>
-   **/
+  define("ROOT"           ,'/srv/homepages/rise-of-light.de/rewrite/www');
+  define('URL_PREFIX'     ,'http://rise-of-light.de/');
+  define('URI_PREFIX'     ,'/rewrite');
+  define('LOCAL_NAMESPACE',URL_PREFIX);
+  define('CONFIG_FILE'    ,ROOT.'/../config.ini');
   
-  define('ROOT', dirname(__FILE__));
+  define("CONTROLLER_DIR", ROOT."/controller");
+  define("MODEL_DIR"     , ROOT."/model");
+  define("FORMATTER_DIR" , ROOT."/formatter");
+  define("VIEW_DIR"      , ROOT."/view");
+  define("CONTENT_DIR"   , ROOT."/content");
   
-  // configure error reporting to be independent of php.ini
-  error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED); 
- 
-  // includes
-  require_once ROOT."/system/configuration.php";
-  require_once ROOT."/system/common.php";
-  require_once ROOT."/system/trace.php";
-  require_once ROOT."/system/routing.php";
+  require_once ROOT."/system/consts.php"; 
+  require_once ROOT."/system/routing.php"; 
   require_once ROOT."/system/views.php";
   require_once ROOT."/system/models.php";
-  require_once ROOT."/controller/controller.php";
+  require_once ROOT."/system/controller.php";
+  require_once ROOT."/system/formatter.php";
   
-  // load controller
   load_controller();
-  
-  // print trace to browser (only if not disabled at top!)
-  if (! $DISABLE_TRACE) print_trace_output($traceContent);
 ?>

@@ -8,37 +8,24 @@
    **/
 	
   $GLOBALS["globalViewVars"] = array();
-  
-  /**
-   * Zuweisen einer global gültigen Ansichtsvariablen
-   **/
   function set_view_var($name, $value) {
     $GLOBALS["globalViewVars"][$name] = $value;
   }
-  
-  /**
-   * Abfragen einer global gültigen Ansichtsvariablen
-   **/
   function get_view_var($name) {
     if (isset($GLOBALS["globalViewVars"][$name])) return $GLOBALS["globalViewVars"][$name];
   }
   
-  /**
-   * Laden einer Ansicht mit unmittelbarer Anzeige
-   * @param   $viewName   Name der Ansicht
-   * @param   $data       Assoziatives Array mit lokal gültigen Ansichtsvariablen
-   **/
   function load_view($viewName, $data) {
-    extract($GLOBALS["globalViewVars"]);
-    extract($data);
-    include (VIEW_DIR."/".$viewName.".php");
+    if (file_exists(VIEW_DIR."/".$viewName.".php")) {
+      extract($GLOBALS["globalViewVars"]);
+      $_VIEW_DATA = $data;
+      extract($data);
+      include (VIEW_DIR."/".$viewName.".php");
+    } else {
+      echo "<div style='border: 1px solid #f00; background: #ffa; padding: 0 15px; margin: 20px 0;'>
+      <p><b>An error has occured: Viewloader was unable to load the requested view <code>view/$viewName.php</code>, because the file does not exist.</b></p></div>";
+    }
   }
-  
-  /**
-   * Laden einer Ansicht mit Rückgabe des erzeugten Quelltextes
-   * @param   $viewName   Name der Ansicht
-   * @param   $data       Assoziatives Array mit lokal gültigen Ansichtsvariablen
-   **/
   function get_view($viewName, $data) {
     ob_start();
     load_view($viewName, $data);

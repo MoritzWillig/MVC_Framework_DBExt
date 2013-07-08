@@ -1,88 +1,54 @@
 <?php
-  /**
-   * Session management model
-   * 
-   * @package    NotenDB2
-   * @subpackage Models
-   * @author     Moritz Willig <>
-   **/
+class SessionModel extends Model  {
+  
+	public function __construct() {
+		parent::__construct();
+    
+    ini_set('session.name','rolDeSID');
+    session_name('rolDeSID');
+    $host_parts = explode(".",$_SERVER["HTTP_HOST"]);
+    $domain="." . $host_parts[count($host_parts)-2] . "." . $host_parts[count($host_parts)-1];
+    session_set_cookie_params (630720000, "/", $domain); //3600*24*365*20
+    session_start();
+    	
+    if (!isset($_SESSION['login'])) { $_SESSION['login']=false; }
+    if (!isset($_SESSION['userdata'])) { $_SESSION['userdata']=array('id'=>-1, 'name'=>''); }
+    
+    $this->User = load_model("user");
+	}
 	
-  class SessionModel {
-    
-    /**
-     * Initializes Session
-     **/
-    function __construct() {
-      ini_set("session.name", "notendbSID");
-      session_start();
-    
-      if (!$this->isSessionInit()) {
-      $_SESSION["user"]=null;
-      $_SESSION["isLoggedIn"]=false;
-      $_SESSION["isSessionInit"]=true;
-      }
-    }
-    
-    /**
-     * Checks if user session is initialized
-     **/
-    function isSessionInit() {
-      return $_SESSION["isSessionInit"];
-    }
-    
-    /**
-     * setLoggedIn alias for loggin out user
-     **/
-    function getLoggedIn() {
-      return $_SESSION["isLoggedIn"];
-    }
-    
-    /**
-     * returns session user
-     **/
-    function getUser($var = null) {
-      if ($var)
-      return $_SESSION["user"][$var];
-      else return $_SESSION["user"];
-    }
-    
-    function isRoot() {
-      return $_SESSION["user"]["kuerzel"] == "root";
-    }
-    
-    function isAdmin() {
-      return $this->isRoot() || $_SESSION["user"]["is_admin"];
-    }
-    
-    function isTutor($did, $lid = null) {
-      $DB = load_model("database");
-      if ($lid == null) $lid = $this->getUID();
-      return $this->isRoot() || (1 == $DB->getsingle("SELECT COUNT(*) FROM tutor WHERE r_lid = %d AND r_did = %d", $lid, $did));
-    }
-    
-    function getUID() {
-      return $_SESSION["user"]["lid"];
-    }
-    
-    /**
-     * Sets loggedin state
-     **/
-    function setLoggedIn($user,$login=true) {
-      if ($login) {
-      $_SESSION["user"]=$user;
-      $_SESSION["isLoggedIn"]=true;
-      } else {
-      $_SESSION["user"]=null;
-      $_SESSION["isLoggedIn"]=false;
-      }
-    }
-    
-    /**
-     * setLoggedIn alias for loggin out user
-     **/
-    function logout() {
-      $this->setLoggedIn(null,false);
-    }
-  }
+	public function login($userdata) {
+		$_SESSION['login']=true;
+    $_SESSION['userdata']=$userdata;
 
+	}
+	
+	public function logout() {
+		$_SESSION['login']=false;
+    $_SESSION['userdata']=array('id'=>-1, 'name'=>'');
+	}
+  
+	public function isLoggedIn() {
+		return $_SESSION['login'];
+	}
+  
+	public function isAdmin() {
+    if (!$this->isLoggedIn()) { return false; }
+    $perm=$this->User->getPermission($_SESSION['userdata']["id"],LOCAL_NAMESPACE);
+    if ($perm=="admin") { return true; } else { return false; }
+	}
+  
+  public function isEditor() {
+    if (!$this->isLoggedIn()) { return false; }
+    $perm=$this->User->getPermission($_SESSION['userdata']["id"],LOCAL_NAMESPACE);
+    if (($perm=="editor") or ($perm=="admin")) { return true; } else { return false; }
+  }
+  
+  public function userData() {
+    return $_SESSION['userdata'];
+  }
+	
+  
+  
+}
 ?>

@@ -1,12 +1,8 @@
-
-
 RewriteEngine On
 
+#direct access to content
+RewriteRule ^content - [L]
 
-RewriteRule ^content/ - [L]
-RewriteRule ^install\.php - [L]
-
-# alle nicht abgefangenen -> pageout.php
+# alle nicht abgefangenen -> index.php
 RewriteCond %{ENV:REDIRECT_STATUS} ^$
 RewriteRule ^(.*)$ index.php [QSA]
-
