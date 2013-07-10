@@ -15,7 +15,6 @@
     }
     if (substr($url,0,1)=="/") { $url=substr($url,1); }
     $q = explode("/", $url);
-    array_splice($q,0,1); //***FIX LATER***
     if (count($q) == 0 || !$q[0]) $q = array("default", "index");
     elseif ((count($q) == 1) || $q[1]=="") $q = array($q[0], "index");
 
